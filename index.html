@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroma Blocks</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Dienas Puzzle</h1>
+            <p>Fit all 10 pieces on the board. (Right-click to rotate pieces!)</p>
+            <div class="controls">
+                <input type="text" id="player-name" maxlength="10" placeholder="Player X" title="Your Leaderboard Name">
+                <button id="today-btn">Today's Puzzle</button>
+                <button id="reset-btn">Random Puzzle</button>
+                <div id="status-message"></div>
+            </div>
+        </header>
+
+        <main>
+            <div class="board-wrapper">
+                <div id="board-container">
+                    <div id="board"></div>
+                </div>
+                <div id="clock-container">
+                    <div id="timer-display">00:00:000</div>
+                    <button id="reveal-btn" style="visibility: hidden; background: #ea580c;">Reveal Solution</button>
+                </div>
+            </div>
+            
+            <div id="sidebar">
+                <h2>Pieces</h2>
+                <div id="pieces-container"></div>
+            </div>
+        </main>
+        <footer>
+            <p id="footer-date"></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
