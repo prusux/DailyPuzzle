@@ -3,8 +3,8 @@ export const config = {
 };
 
 export default async function handler(req) {
-    const BIN_ID = process.env.JSONBIN_BIN_ID || "69cbe880aaba882197afc549";
-    const MASTER_KEY = process.env.JSONBIN_MASTER_KEY || "$2a$10$IRUbqeg4/5madSiaobEJpOeRP.7NDnNf0uo2mpYPCv51U9cbMJ0lW";
+    const BIN_ID = process.env.JSONBIN_BIN_ID;
+    const MASTER_KEY = process.env.JSONBIN_MASTER_KEY;
     
     if (!BIN_ID || !MASTER_KEY) {
         return new Response(JSON.stringify({ error: "KV DB not linked" }), { status: 500, headers: { 'content-type': 'application/json' } });
