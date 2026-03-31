@@ -336,9 +336,17 @@ function initPieces() {
         el.className = `piece ${p.colorClass}`;
         el.dataset.id = p.id;
         
+        let lastRightClick = 0;
         el.addEventListener('contextmenu', e => {
             e.preventDefault();
-            rotatePiece(p.id, el);
+            const now = Date.now();
+            if (now - lastRightClick < 400) {
+                resetPieceToSidebar(p.id);
+                lastRightClick = 0;
+            } else {
+                lastRightClick = now;
+                rotatePiece(p.id, el);
+            }
         });
         
         el.addEventListener('dblclick', e => {
