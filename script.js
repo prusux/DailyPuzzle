@@ -456,6 +456,16 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
+    if(!touchDragStarted && potentialDragTarget) {
+        const pieceEl = potentialDragTarget.closest('.piece');
+        if(pieceEl) {
+            const pInst = pieceInstances.find(pi => pi.id === pieceEl.dataset.id);
+            if(pInst && !pInst.placed) {
+                rotatePiece(pInst.id, pieceEl);
+            }
+        }
+    }
+    
     potentialDragTarget = null;
     touchDragStarted = false;
     
@@ -530,6 +540,10 @@ function startDrag(e) {
     
     document.body.appendChild(pieceEl);
 
+    pieceEl.dataset.dragStartX = e.clientX;
+    pieceEl.dataset.dragStartY = e.clientY;
+    pieceEl.dataset.wasPlaced = pInst.placed;
+
     pieceEl.classList.add('dragging');
     pieceEl.style.position = 'absolute';
     pieceEl.style.left = (e.clientX + scrollX - offset.x) + 'px';
@@ -597,6 +611,11 @@ function endDrag(e) {
         }
     }
     
+    const startX = parseFloat(pieceEl.dataset.dragStartX || 0);
+    const startY = parseFloat(pieceEl.dataset.dragStartY || 0);
+    const wasPlaced = pieceEl.dataset.wasPlaced === 'true';
+    const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+
     if(!placedSuccess) {
         pieceEl.style.position = 'relative';
         pieceEl.style.left = '0';
@@ -618,6 +637,10 @@ function endDrag(e) {
                 }
             }, 120000); 
         }
+    }
+    
+    if (dist < 5 && !wasPlaced && !pInst.placed) {
+        rotatePiece(pInst.id, pieceEl);
     }
     
     draggingPiece = null;

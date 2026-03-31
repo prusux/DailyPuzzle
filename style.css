@@ -90,6 +90,7 @@ button:hover {
 
 main {
     display: flex;
+    flex-wrap: wrap;
     gap: 3rem;
     justify-content: center;
     align-items: flex-start;
@@ -254,8 +255,10 @@ footer {
     background: rgba(30, 41, 59, 0.4);
     padding: 1.5rem;
     border-radius: 16px;
-    width: 540px;
-    height: 720px;
+    width: 100%;
+    max-width: 540px;
+    min-height: 720px;
+    height: auto;
     align-items: center;
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-sizing: border-box;
