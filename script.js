@@ -349,6 +349,13 @@ function initPieces() {
             }
         });
         
+        slotEl.addEventListener('contextmenu', e => {
+            if (!p.placed) {
+                e.preventDefault();
+                rotatePiece(p.id, el);
+            }
+        });
+        
         el.addEventListener('dblclick', e => {
             e.preventDefault();
             resetPieceToSidebar(p.id);

@@ -191,8 +191,20 @@ footer {
     color: white;
     font-family: 'Outfit', sans-serif;
     overflow-y: auto;
-    max-height: 520px;
+    max-height: 640px;
     margin-top: 0.5rem;
+}
+
+.leaderboard-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+.leaderboard-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+.leaderboard-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
 }
 
 .leaderboard-wrapper h3 {
