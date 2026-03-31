@@ -91,6 +91,13 @@ let lastLeaderboardState = "";
 let usedReveal = false;
 let puzzleDateMask = "";
 
+/* Mobile Touch Variables */
+let lastTap = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+let potentialDragTarget = null;
+let touchDragStarted = false;
+
 function initGame(mode = 'today') {
     gameplayStartTime = null;
     usedReveal = false;
@@ -334,11 +341,34 @@ function initPieces() {
             rotatePiece(p.id, el);
         });
         
+        el.addEventListener('dblclick', e => {
+            e.preventDefault();
+            resetPieceToSidebar(p.id);
+        });
+        
         renderBlocks(el, p.shape);
         
         slotEl.appendChild(el);
         container.appendChild(slotEl);
     });
+}
+
+function resetPieceToSidebar(pId) {
+    const pInst = pieceInstances.find(pi => pi.id === pId);
+    if(pInst && pInst.placed) {
+        removePieceFromBoard(pInst);
+        const pieceEl = document.querySelector(`.piece[data-id="${pId}"]`);
+        const slotEl = document.querySelector(`.piece-slot[data-slot-id="${pId}"]`);
+        if(pieceEl && slotEl) {
+            pieceEl.style.position = 'relative';
+            pieceEl.style.left = '0';
+            pieceEl.style.top = '0';
+            slotEl.appendChild(pieceEl);
+            pInst.placed = false;
+            pieceEl.classList.remove('placed');
+            document.querySelectorAll('.cell.ghost-highlight').forEach(c => c.classList.remove('ghost-highlight'));
+        }
+    }
 }
 
 function renderBlocks(element, shape) {
@@ -380,6 +410,60 @@ function rotatePiece(id, element) {
 function initRandom() { initGame('random'); }
 function initToday() { initGame('today'); }
 
+function handleTouchStart(e) {
+    if(e.touches.length > 1) return;
+    if(!e.target.closest('.piece')) return;
+    
+    const now = Date.now();
+    const pieceEl = e.target.closest('.piece');
+    const pId = pieceEl.dataset.id;
+    
+    if((now - lastTap) < 300) {
+        e.preventDefault(); 
+        resetPieceToSidebar(pId);
+        lastTap = 0;
+        return;
+    }
+    lastTap = now;
+    
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    potentialDragTarget = e.target;
+    touchDragStarted = false;
+}
+
+function handleTouchMove(e) {
+    if(potentialDragTarget) {
+        const touch = e.touches[0];
+        const dist = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+        if(dist > 10 && !touchDragStarted) {
+            touchDragStarted = true;
+            startDrag({
+                target: potentialDragTarget,
+                button: 0,
+                clientX: touchStartX,
+                clientY: touchStartY
+            });
+        }
+    }
+    
+    if(!draggingPiece) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    drag({ clientX: touch.clientX, clientY: touch.clientY });
+}
+
+function handleTouchEnd(e) {
+    potentialDragTarget = null;
+    touchDragStarted = false;
+    
+    if(!draggingPiece) return;
+    const touch = e.changedTouches[0];
+    endDrag({ clientX: touch.clientX, clientY: touch.clientY });
+}
+
 function setupListeners() {
     document.removeEventListener('mousedown', startDrag);
     document.removeEventListener('mousemove', drag);
@@ -388,6 +472,14 @@ function setupListeners() {
     document.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', endDrag);
+    
+    document.removeEventListener('touchstart', handleTouchStart);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+    
+    document.addEventListener('touchstart', handleTouchStart, {passive: false});
+    document.addEventListener('touchmove', handleTouchMove, {passive: false});
+    document.addEventListener('touchend', handleTouchEnd);
     
     const rb = document.getElementById('reset-btn');
     rb.removeEventListener('click', initRandom);
@@ -574,17 +666,41 @@ function getPlayerName() {
     return input.replace(/</g, "&lt;").replace(/>/g, "&gt;").substring(0, 10);
 }
 
-function saveScore(timeInSeconds, mask) {
+async function fetchGlobalScores() {
+    try {
+        const res = await fetch('/api/leaderboard');
+        if(res.ok) {
+            const data = await res.json();
+            localStorage.setItem('chroma_scores', JSON.stringify(data));
+        }
+    } catch(err) {
+        console.log("Global leaderboard unlinked. Using local storage.", err);
+    }
+}
+
+async function saveScore(timeInSeconds, mask) {
     if(usedReveal) return; 
     const name = getPlayerName();
-    let scores = JSON.parse(localStorage.getItem('chroma_scores') || '[]');
-    scores.push({
+    const newScore = {
         player: name,
         time: timeInSeconds,
         mask: mask,
         timestamp: Date.now()
-    });
+    };
+    
+    let scores = JSON.parse(localStorage.getItem('chroma_scores') || '[]');
+    scores.push(newScore);
     localStorage.setItem('chroma_scores', JSON.stringify(scores));
+    
+    try {
+        await fetch('/api/leaderboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newScore)
+        });
+    } catch(err) {
+        console.log("Could not push globally.");
+    }
 }
 
 function renderLeaderboardDOM() {
@@ -629,7 +745,6 @@ function renderLeaderboardDOM() {
     const btns = container.querySelectorAll('.lb-challenge-btn');
     btns.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if(leaderboardTimer) { clearInterval(leaderboardTimer); leaderboardTimer = null; }
             initGame(e.target.dataset.mask);
         });
     });
@@ -637,8 +752,17 @@ function renderLeaderboardDOM() {
 
 function showLeaderboard() {
     if(leaderboardTimer) clearInterval(leaderboardTimer);
+    
+    // Initial paint
     renderLeaderboardDOM();
-    leaderboardTimer = setInterval(renderLeaderboardDOM, 3000);
+    
+    fetchGlobalScores().finally(() => {
+        renderLeaderboardDOM();
+    });
+    
+    leaderboardTimer = setInterval(() => {
+        fetchGlobalScores().then(renderLeaderboardDOM);
+    }, 5000);
 }
 
 function checkWinCondition() {
