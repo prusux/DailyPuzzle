@@ -355,18 +355,24 @@ function initPieces() {
 
 function resetPieceToSidebar(pId) {
     const pInst = pieceInstances.find(pi => pi.id === pId);
-    if(pInst && pInst.placed) {
-        removePieceFromBoard(pInst);
+    if(pInst) {
+        if(pInst.placed) {
+            removePieceFromBoard(pInst);
+            pInst.placed = false;
+        }
         const pieceEl = document.querySelector(`.piece[data-id="${pId}"]`);
         const slotEl = document.querySelector(`.piece-slot[data-slot-id="${pId}"]`);
         if(pieceEl && slotEl) {
             pieceEl.style.position = 'relative';
             pieceEl.style.left = '0';
             pieceEl.style.top = '0';
+            pieceEl.classList.remove('placed', 'dragging');
             slotEl.appendChild(pieceEl);
-            pInst.placed = false;
-            pieceEl.classList.remove('placed');
             document.querySelectorAll('.cell.ghost-highlight').forEach(c => c.classList.remove('ghost-highlight'));
+            
+            if(draggingPiece && draggingPiece.dataset.id === pId) {
+                draggingPiece = null;
+            }
         }
     }
 }
