@@ -645,10 +645,6 @@ function endDrag(e) {
         }
     }
     
-    if (dist < 5 && !wasPlaced && !pInst.placed) {
-        rotatePiece(pInst.id, pieceEl);
-    }
-    
     draggingPiece = null;
     checkWinCondition();
 }
