@@ -90,6 +90,7 @@ let leaderboardTimer = null;
 let lastLeaderboardState = "";
 let usedReveal = false;
 let puzzleDateMask = "";
+let gameFinished = false;
 
 /* Mobile Touch Variables */
 let lastTap = 0;
@@ -103,6 +104,7 @@ function initGame(mode = 'today') {
     usedReveal = false;
     puzzleDateMask = "";
     lastLeaderboardState = "";
+    gameFinished = false;
     
     clearTimeout(revealTimeout);
     if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
@@ -337,8 +339,9 @@ function initPieces() {
         el.dataset.id = p.id;
         
         let lastRightClick = 0;
-        el.addEventListener('contextmenu', e => {
+        const handleContextMenu = e => {
             e.preventDefault();
+            if(gameFinished) return;
             const now = Date.now();
             if (now - lastRightClick < 400) {
                 resetPieceToSidebar(p.id);
@@ -347,19 +350,18 @@ function initPieces() {
                 lastRightClick = now;
                 rotatePiece(p.id, el);
             }
-        });
-        
-        slotEl.addEventListener('contextmenu', e => {
-            if (!p.placed) {
-                e.preventDefault();
-                rotatePiece(p.id, el);
-            }
-        });
-        
-        el.addEventListener('dblclick', e => {
+        };
+
+        el.addEventListener('contextmenu', handleContextMenu);
+        slotEl.addEventListener('contextmenu', handleContextMenu);
+
+        const handleDblClick = e => {
             e.preventDefault();
             resetPieceToSidebar(p.id);
-        });
+        };
+        
+        el.addEventListener('dblclick', handleDblClick);
+        slotEl.addEventListener('dblclick', handleDblClick);
         
         renderBlocks(el, p.shape);
         
@@ -369,6 +371,7 @@ function initPieces() {
 }
 
 function resetPieceToSidebar(pId) {
+    if(gameFinished) return;
     const pInst = pieceInstances.find(pi => pi.id === pId);
     if(pInst) {
         if(pInst.placed) {
@@ -421,6 +424,7 @@ function renderBlocks(element, shape) {
 }
 
 function rotatePiece(id, element) {
+    if(gameFinished) return;
     const p = pieceInstances.find(pi => pi.id === id);
     if(!p || p.placed || element.classList.contains('dragging')) return;
     
@@ -432,11 +436,15 @@ function initRandom() { initGame('random'); }
 function initToday() { initGame('today'); }
 
 function handleTouchStart(e) {
-    if(e.touches.length > 1) return;
-    if(!e.target.closest('.piece')) return;
+    if(e.touches.length > 1 || gameFinished) return;
+    
+    let pieceEl = e.target.closest('.piece');
+    const slotEl = e.target.closest('.piece-slot');
+    
+    if(!pieceEl && slotEl) pieceEl = slotEl.querySelector('.piece');
+    if(!pieceEl) return;
     
     const now = Date.now();
-    const pieceEl = e.target.closest('.piece');
     const pId = pieceEl.dataset.id;
     
     if((now - lastTap) < 300) {
@@ -478,12 +486,10 @@ function handleTouchMove(e) {
 
 function handleTouchEnd(e) {
     if(!touchDragStarted && potentialDragTarget) {
-        const pieceEl = potentialDragTarget.closest('.piece');
-        if(pieceEl) {
-            const pInst = pieceInstances.find(pi => pi.id === pieceEl.dataset.id);
-            if(pInst && !pInst.placed) {
-                rotatePiece(pInst.id, pieceEl);
-            }
+        const pieceEl = potentialDragTarget;
+        const pInst = pieceInstances.find(pi => pi.id === pieceEl.dataset.id);
+        if(pInst && !pInst.placed && !gameFinished) {
+            rotatePiece(pInst.id, pieceEl);
         }
     }
     
@@ -526,7 +532,11 @@ function setupListeners() {
 }
 
 function startDrag(e) {
-    const pieceEl = e.target.closest('.piece');
+    if(gameFinished) return;
+    let pieceEl = e.target.closest('.piece');
+    const slotEl = e.target.closest('.piece-slot');
+    
+    if(!pieceEl && slotEl) pieceEl = slotEl.querySelector('.piece');
     if(!pieceEl) return;
     if(e.button !== 0) return; 
     
@@ -807,7 +817,8 @@ function showLeaderboard() {
 
 function checkWinCondition() {
     const allPlaced = pieceInstances.every(pi => pi.placed);
-    if(allPlaced) {
+    if(allPlaced && !gameFinished) {
+        gameFinished = true;
         document.getElementById('reveal-btn').style.visibility = 'hidden';
         document.getElementById('status-message').innerText = "You Win! All pieces placed!";
         clearTimeout(revealTimeout);
