@@ -850,6 +850,7 @@ function checkWinCondition() {
 
 function showSolution() {
     usedReveal = true;
+    gameFinished = true;
     for(let i=0; i<ROWS; i++) {
         for(let j=0; j<COLS; j++) {
             if(boardData[i][j] !== -1 && boardData[i][j] !== -2) {
