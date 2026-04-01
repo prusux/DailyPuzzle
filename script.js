@@ -3,9 +3,9 @@ const COLS = 7;
 let CELL_SIZE = 60; 
 let SIDEBAR_SCALE = 0.55;
 
-if (window.innerWidth <= 600) {
-    CELL_SIZE = (window.innerWidth * 0.9 - 24) / 7;
-    SIDEBAR_SCALE = 0.43;
+if (window.innerWidth <= 1024) {
+    CELL_SIZE = (window.innerWidth * 0.94 - 24) / 7;
+    SIDEBAR_SCALE = 0.38;
     document.documentElement.style.setProperty('--cell-size', CELL_SIZE + 'px');
     document.documentElement.style.setProperty('--sidebar-scale', String(SIDEBAR_SCALE));
 }
