@@ -466,7 +466,7 @@ function handleTouchMove(e) {
     if(potentialDragTarget) {
         const touch = e.touches[0];
         const dist = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
-        if(dist > 10 && !touchDragStarted) {
+        if(dist > 20 && !touchDragStarted) {
             touchDragStarted = true;
             startDrag({
                 target: potentialDragTarget,
@@ -485,10 +485,15 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
+    const touch = e.changedTouches[0];
+    const dist = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+    
     if(!touchDragStarted && potentialDragTarget) {
-        const pieceEl = potentialDragTarget;
+        const pieceEl = potentialDragTarget.closest('.piece');
         const pInst = pieceInstances.find(pi => pi.id === pieceEl.dataset.id);
-        if(pInst && !pInst.placed && !gameFinished) {
+        const wasPlaced = pieceEl.classList.contains('placed');
+        
+        if (dist < 20 && !wasPlaced && pInst && !pInst.placed && !gameFinished) {
             rotatePiece(pInst.id, pieceEl);
         }
     }
@@ -497,7 +502,6 @@ function handleTouchEnd(e) {
     touchDragStarted = false;
     
     if(!draggingPiece) return;
-    const touch = e.changedTouches[0];
     endDrag({ clientX: touch.clientX, clientY: touch.clientY });
 }
 
@@ -545,7 +549,7 @@ function startDrag(e) {
     const pInst = pieceInstances.find(pi => pi.id === pId);
     
     const isSidebar = !pInst.placed;
-    const currentScale = isSidebar ? SIDEBAR_SCALE : 1;
+    const currentScale = isSidebar ? (window.innerWidth <= 600 ? 0.35 : SIDEBAR_SCALE) : 1;
     
     if(pInst.placed) {
         removePieceFromBoard(pInst);
