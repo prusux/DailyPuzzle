@@ -25,6 +25,14 @@ body {
     touch-action: none;
 }
 
+#drag-layer {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 99999;
+    overflow: hidden;
+}
+
 .game-container {
     display: flex;
     flex-direction: column;
@@ -489,7 +497,7 @@ body > .piece.dragging {
     .board-wrapper { display: contents; }
     #board-container { 
         order: 1; 
-        padding: 0.75rem; 
+        padding: 1.5rem; 
         width: 94vw; 
         box-sizing: border-box; 
     }
@@ -497,7 +505,7 @@ body > .piece.dragging {
         order: 2; 
         width: 94vw; 
         max-width: 100%; 
-        padding: 0.75rem;
+        padding: 1.5rem;
         min-height: auto;
     }
     #clock-container { 
@@ -506,9 +514,9 @@ body > .piece.dragging {
         margin-top: 1.5rem; 
         margin-bottom: 1rem; 
     }
-    #pieces-container { gap: 0.5rem; }
+    #pieces-container { gap: 10px; }
     .piece-slot { 
-        width: calc((94vw - 5rem) / 5); 
-        height: calc((94vw - 5rem) / 5); 
+        width: calc((94vw - 90px) / 5); 
+        height: calc((94vw - 90px) / 5); 
     }
 }

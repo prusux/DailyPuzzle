@@ -583,7 +583,7 @@ function startDrag(e) {
     offset.x = unscaledX;
     offset.y = unscaledY;
     
-    document.body.appendChild(pieceEl);
+    document.getElementById('drag-layer').appendChild(pieceEl);
 
     pieceEl.dataset.dragStartX = e.clientX;
     pieceEl.dataset.dragStartY = e.clientY;
