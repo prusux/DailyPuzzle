@@ -309,6 +309,7 @@ function generateValidBoardAndSolution(mode) {
         
         if(solveExact()) {
             puzzleDateMask = `${zoneLabels[`${blockedSpots[0].r},${blockedSpots[0].c}`]} ${zoneLabels[`${blockedSpots[1].r},${blockedSpots[1].c}`]} ${zoneLabels[`${blockedSpots[2].r},${blockedSpots[2].c}`]}`;
+            document.getElementById('footer-date').innerText = (mode === 'today' ? "Today's Date: " : "Puzzle Date: ") + puzzleDateMask;
             
             const cells = document.querySelectorAll('.cell');
             blockedSpots.forEach(spot => {
@@ -891,9 +892,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (closeModal) closeModal.addEventListener('click', () => {
         document.getElementById('status-modal').classList.remove('active');
     });
-
-    const today = new Date();
-    document.getElementById('footer-date').innerText = "Today's Date: " + today.toDateString();
     
     const nameInput = document.getElementById('player-name');
     const savedName = localStorage.getItem('chroma_player_name');
