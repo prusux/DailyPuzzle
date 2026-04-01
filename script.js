@@ -4,8 +4,8 @@ let CELL_SIZE = 60;
 let SIDEBAR_SCALE = 0.55;
 
 if (window.innerWidth <= 1024) {
-    CELL_SIZE = (window.innerWidth * 0.94 - 24) / 7;
-    const slotWidth = (window.innerWidth * 0.94 - 80) / 5;
+    CELL_SIZE = (window.innerWidth * 0.94 - 48) / 7;
+    const slotWidth = (window.innerWidth * 0.94 - 90) / 5;
     const maxPieceWidth = 4 * CELL_SIZE;
     SIDEBAR_SCALE = Math.max(0.1, (slotWidth / maxPieceWidth) - 0.02);
     document.documentElement.style.setProperty('--cell-size', CELL_SIZE + 'px');
