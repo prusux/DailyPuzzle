@@ -1,7 +1,14 @@
 const ROWS = 8;
 const COLS = 7;
-const CELL_SIZE = 60; 
-const SIDEBAR_SCALE = 0.55;
+let CELL_SIZE = 60; 
+let SIDEBAR_SCALE = 0.55;
+
+if (window.innerWidth <= 600) {
+    CELL_SIZE = (window.innerWidth * 0.9 - 24) / 7;
+    SIDEBAR_SCALE = 0.43;
+    document.documentElement.style.setProperty('--cell-size', CELL_SIZE + 'px');
+    document.documentElement.style.setProperty('--sidebar-scale', String(SIDEBAR_SCALE));
+}
 
 function getUniqueRotations(shape) {
     let rots = [];
@@ -549,7 +556,7 @@ function startDrag(e) {
     const pInst = pieceInstances.find(pi => pi.id === pId);
     
     const isSidebar = !pInst.placed;
-    const currentScale = isSidebar ? (window.innerWidth <= 600 ? 0.33 : SIDEBAR_SCALE) : 1;
+    const currentScale = isSidebar ? SIDEBAR_SCALE : 1;
     
     if(pInst.placed) {
         removePieceFromBoard(pInst);
