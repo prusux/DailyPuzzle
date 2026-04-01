@@ -549,7 +549,7 @@ function startDrag(e) {
     const pInst = pieceInstances.find(pi => pi.id === pId);
     
     const isSidebar = !pInst.placed;
-    const currentScale = isSidebar ? (window.innerWidth <= 600 ? 0.35 : SIDEBAR_SCALE) : 1;
+    const currentScale = isSidebar ? (window.innerWidth <= 600 ? 0.33 : SIDEBAR_SCALE) : 1;
     
     if(pInst.placed) {
         removePieceFromBoard(pInst);

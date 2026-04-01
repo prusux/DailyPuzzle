@@ -385,13 +385,15 @@ body > .piece.dragging {
     }
     #clock-container { 
         order: 3; 
-        margin-top: 1rem; 
+        width: 100%;
+        margin-top: 1.5rem; 
         margin-bottom: 1rem; 
     }
 }
 
 @media (max-width: 600px) {
+    #sidebar { padding: 0.75rem; }
     #pieces-container { gap: 0.5rem; }
-    .piece-slot { width: 82px; height: 82px; }
-    #pieces-container .piece { transform: scale(0.35); }
+    .piece-slot { width: 78px; height: 78px; }
+    #pieces-container .piece { transform: scale(0.33); }
 }
