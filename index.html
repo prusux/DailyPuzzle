@@ -28,9 +28,15 @@
                 <input type="text" id="player-name" maxlength="10" placeholder="Player X" title="Your Leaderboard Name">
                 <button id="today-btn">Today's</button>
                 <button id="reset-btn">Random</button>
-                <div id="status-message"></div>
             </div>
         </header>
+
+        <div id="status-modal" class="modal-overlay">
+            <div class="modal-content">
+                <p id="status-message"></p>
+                <button id="close-modal-btn">OK</button>
+            </div>
+        </div>
 
         <main>
             <div class="board-wrapper">

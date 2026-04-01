@@ -5,7 +5,9 @@ let SIDEBAR_SCALE = 0.55;
 
 if (window.innerWidth <= 1024) {
     CELL_SIZE = (window.innerWidth * 0.94 - 24) / 7;
-    SIDEBAR_SCALE = 0.38;
+    const slotWidth = (window.innerWidth * 0.94 - 80) / 5;
+    const maxPieceWidth = 4 * CELL_SIZE;
+    SIDEBAR_SCALE = Math.max(0.1, (slotWidth / maxPieceWidth) - 0.02);
     document.documentElement.style.setProperty('--cell-size', CELL_SIZE + 'px');
     document.documentElement.style.setProperty('--sidebar-scale', String(SIDEBAR_SCALE));
 }
@@ -120,6 +122,7 @@ function initGame(mode = 'today') {
     document.getElementById('timer-display').innerText = "00:00:000";
     document.getElementById('reveal-btn').style.visibility = 'hidden';
     document.getElementById('status-message').innerText = "";
+    document.getElementById('status-modal').classList.remove('active');
 
     setTimeout(() => {
         generateValidBoardAndSolution(mode);
@@ -834,6 +837,7 @@ function checkWinCondition() {
         gameFinished = true;
         document.getElementById('reveal-btn').style.visibility = 'hidden';
         document.getElementById('status-message').innerText = "You Win! All pieces placed!";
+        document.getElementById('status-modal').classList.add('active');
         clearTimeout(revealTimeout);
         if(timerInterval) {
             clearInterval(timerInterval);
@@ -871,6 +875,7 @@ function showSolution() {
     
     document.getElementById('reveal-btn').style.visibility = 'hidden';
     document.getElementById('status-message').innerText = "Solution Revealed.";
+    document.getElementById('status-modal').classList.add('active');
     if(timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -879,6 +884,14 @@ function showSolution() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.addEventListener('contextmenu', e => e.preventDefault());
+    
+    const closeModal = document.getElementById('close-modal-btn');
+    if (closeModal) closeModal.addEventListener('click', () => {
+        document.getElementById('status-modal').classList.remove('active');
+    });
+
     const today = new Date();
     document.getElementById('footer-date').innerText = "Today's Date: " + today.toDateString();
     
