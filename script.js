@@ -789,7 +789,8 @@ function renderLeaderboardDOM() {
     html += `<table class="lb-table"><tr><th>Player</th><th>Time (s)</th><th>Challenge</th></tr>`;
     if(top5.length === 0) html += `<tr><td colspan="3" style="text-align:center;">No competitive scores yet.</td></tr>`;
     top5.forEach(s => {
-        html += `<tr><td>${s.player}</td><td>${s.time}s</td><td><button class="lb-challenge-btn" data-mask="${s.mask}">Play ${s.mask}</button></td></tr>`;
+        const dTime = Number(s.time).toFixed(2);
+        html += `<tr><td>${s.player}</td><td>${dTime}s</td><td><button class="lb-challenge-btn" data-mask="${s.mask}">Play ${s.mask}</button></td></tr>`;
     });
     html += `</table>`;
     
@@ -797,7 +798,8 @@ function renderLeaderboardDOM() {
     html += `<table class="lb-table"><tr><th>Player</th><th>Time (s)</th><th>Challenge</th></tr>`;
     if(recent15.length === 0) html += `<tr><td colspan="3" style="text-align:center;">No games recorded.</td></tr>`;
     recent15.forEach(s => {
-        html += `<tr><td>${s.player}</td><td>${s.time}s</td><td><button class="lb-challenge-btn" data-mask="${s.mask}">Play ${s.mask}</button></td></tr>`;
+        const dTime = Number(s.time).toFixed(2);
+        html += `<tr><td>${s.player}</td><td>${dTime}s</td><td><button class="lb-challenge-btn" data-mask="${s.mask}">Play ${s.mask}</button></td></tr>`;
     });
     html += `</table></div>`;
     
@@ -840,7 +842,7 @@ function checkWinCondition() {
         
         if(!usedReveal && gameplayStartTime) {
             const elapsed = Date.now() - gameplayStartTime;
-            const timeInSeconds = Math.min(999, Math.floor(elapsed / 1000));
+            const timeInSeconds = Math.min(999.99, elapsed / 1000);
             saveScore(timeInSeconds, puzzleDateMask);
         }
         

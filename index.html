@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dienas Puzzle</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="game-container">
         <header>
-            <h1>Dienas Puzzle</h1>
-            <p>Fit all 10 pieces on the board. (Right-click to rotate pieces!)</p>
+            <div class="header-top">
+                <h1>Dienas Puzzle</h1>
+                <div class="help-btn">?
+                    <div class="help-tooltip">
+                        <p><strong>Fit all 10 pieces on the board!</strong></p>
+                        <ul>
+                            <li>Drag and drop.</li>
+                            <li>Right-click to rotate pieces.</li>
+                            <li>Right double-click to send back to sidebar.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="controls">
                 <input type="text" id="player-name" maxlength="10" placeholder="Player X" title="Your Leaderboard Name">
-                <button id="today-btn">Today's Puzzle</button>
-                <button id="reset-btn">Random Puzzle</button>
+                <button id="today-btn">Today's</button>
+                <button id="reset-btn">Random</button>
                 <div id="status-message"></div>
             </div>
         </header>
@@ -32,7 +44,6 @@
             </div>
             
             <div id="sidebar">
-                <h2>Pieces</h2>
                 <div id="pieces-container"></div>
             </div>
         </main>
